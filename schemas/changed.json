@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lets.dev/schemas/uniques/mors/changed.json",
+  "title": "mors.changed (event)",
+  "description": "The message settled: the human finished a word (silence of a word gap after the last element), erased, or cleared, or a Claude command or a restore changed the message. Settled message only, never while a letter is open. Stay silent on claude and restore, and mostly on human too: the tape is their draft, not a conversation. Decode morse yourself, because text is a plain table lookup and the human's hand is not.",
+  "type": "object",
+  "required": ["rev", "morse", "text", "letters", "words", "wpm", "unit", "view", "by"],
+  "properties": {
+    "rev": { "$ref": "#/$defs/rev" },
+    "morse": { "$ref": "#/$defs/morse" },
+    "text": { "$ref": "#/$defs/text" },
+    "letters": { "type": "integer", "minimum": 0, "description": "Number of letter groups in the message." },
+    "words": { "type": "integer", "minimum": 0, "description": "Number of words in the message." },
+    "wpm": { "type": "number", "minimum": 3, "maximum": 30, "description": "Speed in words per minute: 1200 / unit." },
+    "unit": { "type": "number", "minimum": 40, "maximum": 400, "description": "Milliseconds per unit (the length of a dot). With auto on it follows the human's keying." },
+    "view": { "$ref": "#/$defs/view" },
+    "by": { "enum": ["human", "claude", "restore"], "description": "Who changed the message. Stay silent on claude and restore." },
+    "delta": {
+      "type": "object",
+      "description": "What was added since the previous mors.changed, when the change was an append.",
+      "required": ["morse", "text"],
+      "properties": {
+        "morse": { "$ref": "#/$defs/morse" },
+        "text": { "$ref": "#/$defs/text" }
+      }
+    }
+  },
+  "$defs": {
+    "rev": { "type": "integer", "minimum": 1, "description": "Message revision; starts at 1 on an empty tape and never goes down. Every change bumps it, a load too." },
+    "morse": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "maxLength": 12000,
+      "description": "The message as elements: . and - only, letters separated by a space, words by \" / \". At most 4 000 elements; the limit here counts the separators too."
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "The window's decode, uppercase, words separated by one space. # marks a group that is not in the table; prosigns read <AR>, <SK>, <SOS>."
+    },
+    "view": {
+      "type": "object",
+      "description": "Which of Doto's extras are open. key is the minimum.",
+      "required": ["controller", "readback", "chart"],
+      "properties": {
+        "controller": { "enum": ["key", "full"], "description": "key is the minimum; full is the full controller." },
+        "readback": { "type": "boolean", "description": "The decoded characters are shown on the tape." },
+        "chart": { "type": "boolean", "description": "The alphabet chart is open." }
+      }
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "lip": 1,
+  "name": "mors",
+  "version": "0.1.0",
+  "title": "Mors — talk in Morse",
+  "description": "One key, one tape. Key your message in dots and dashes and send it to Claude, who reads it as a prompt and does what it says. The window assumes you know Morse: only Doto can help you craft it (read it back, spell a word, the chart, a full controller), and Claude can answer in Morse on the tape.",
+  "entry": "ui/index.html",
+  "guide": "GUIDE.md",
+  "icon": "icon.svg",
+  "engine": ">=0.4.0",
+  "domains": [
+    "mors"
+  ],
+  "capabilities": [
+    "entity",
+    "chat",
+    "components"
+  ],
+  "events": {
+    "mors.changed": {
+      "summary": "A word closed, an erase, a clear, or Claude's command changed the message (settled, never mid-letter): {rev, morse, text, letters, words, wpm, unit, view, by: human|claude|restore, delta?}",
+      "schema": "schemas/changed.json"
+    },
+    "mors.ghost.accept": {
+      "summary": "The human keyed the whole ghost: {rev, text, assisted} (assisted = letters Tab keyed for them)"
+    },
+    "mors.ghost.reject": {
+      "summary": "The ghost was dropped: {rev, reason: esc|keyed-away|cleared, keyed}"
+    },
+    "mors.ask": {
+      "summary": "Help asked through Doto: {kind: spell|check|free, question, morse, text, rev, view, source: menu|form}. spell = the words to show as a ghost; check = read what was keyed and say so.",
+      "schema": "schemas/ask.json"
+    },
+    "mors.mode": {
+      "summary": "One of Doto's extras was opened or closed: {view: {controller: key|full, readback, chart}, by: human|claude}"
+    },
+    "mors.played": {
+      "summary": "A mors.play finished: {id, morse, ms}"
+    },
+    "mors.export": {
+      "summary": "\"Send to Claude\": {label, morse, text, letters, words, wpm, view, reply, ends?, stats}. A handoff: decode it yourself, say what you read, then treat it as the prompt and answer in the transcript.",
+      "schema": "schemas/export.json"
+    },
+    "mors.snapshot": {
+      "summary": "Answer to the mors.snapshot command (re = command id): the export payload"
+    }
+  },
+  "commands": {
+    "mors.suggest": {
+      "summary": "The ghost: letters for the human to key next, shown dim after the message with their characters: {rev, text, reason?}. Up to 60 characters; \"\" clears.",
+      "schema": "schemas/suggest.json"
+    },
+    "mors.play": {
+      "summary": "Talk Morse back: blink the lamp, sound the tone and show the symbols on Claude's track: {id?, text?, morse?, wpm?, silent?}. Plays queue; {text: \"\"} stops. Ends with mors.played.",
+      "schema": "schemas/play.json"
+    },
+    "mors.insert": {
+      "summary": "Append to the human's message, keyed at the current speed unless play:false: {text?, morse?, play?}. Undoable. Ask before inserting more than a word."
+    },
+    "mors.erase": {
+      "summary": "Remove from the end: {letters?: n} | {words?: n} | {all: true}. Undoable."
+    },
+    "mors.reveal": {
+      "summary": "Doto's extras: {controller?: key|full, readback?: bool, chart?: bool}; only the keys given change"
+    },
+    "mors.set": {
+      "summary": "Speed and sound: {wpm?: 3..30 | unit?: 40..400 ms, auto?: bool, sound?: bool}"
+    },
+    "mors.load": {
+      "summary": "Restore a message (the resume command): {morse, wpm?, view?, reply?, ghost?}. Silent except one mors.changed {by: \"restore\"}.",
+      "schema": "schemas/load.json"
+    },
+    "mors.snapshot": {
+      "summary": "Ask the window for its state; it replies with a mors.snapshot event"
+    }
+  },
+  "permissions": {
+    "fs.write": [],
+    "net": []
+  },
+  "session": {
+    "export": "mors.export",
+    "snapshot": "mors.snapshot",
+    "restore": "mors.load"
+  },
+  "author": {
+    "name": "TikoTikTok",
+    "url": "https://github.com/TikoTikTok"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/TikoTikTok/lets-unique-mors",
+  "tags": [
+    "morse",
+    "key",
+    "tape",
+    "signal",
+    "prompt"
+  ]
+}

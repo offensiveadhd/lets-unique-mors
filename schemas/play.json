@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lets.dev/schemas/uniques/mors/play.json",
+  "title": "mors.play (command)",
+  "description": "Talk Morse back: play text (encoded by the window) or morse on Claude's reply track. The lamp blinks magenta, the tone sounds at a lower pitch than the human's unless silent is set or sound is off, and the symbols appear on the track as they play. Plays queue in order; {text: \"\"} stops the current play and empties the queue. Each play ends with a mors.played event carrying the id. The key stays live during a play. Keep plays short, and speak after mors.played, not during.",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "minLength": 1, "description": "Your name for this play. It comes back on mors.played." },
+    "text": { "type": "string", "description": "What to play, as text. The window encodes it. \"\" stops and empties the queue." },
+    "morse": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "description": "What to play, as elements: . and - only, letters separated by a space, words by \" / \". Use text or morse."
+    },
+    "wpm": { "type": "number", "minimum": 3, "maximum": 30, "description": "Speed of this play in words per minute. Defaults to the window's speed." },
+    "silent": { "type": "boolean", "description": "true blinks the lamp and writes the track without the tone." }
+  }
+}

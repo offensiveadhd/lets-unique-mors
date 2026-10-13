@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lets.dev/schemas/uniques/mors/suggest.json",
+  "title": "mors.suggest (command)",
+  "description": "Show text as the ghost: dim patterns with the character above each, after the end of the message, for the human to key. Send the rev you answered. The ghost is shown when rev is the current one, or when the decoded text is still what it was at that rev; otherwise it is dropped silently. text \"\" clears the ghost. A new ghost replaces the old one without a reject event. The human keys it, or Tab keys one letter for them; mors.ghost.accept comes back when the whole ghost is keyed, mors.ghost.reject when it is dropped.",
+  "type": "object",
+  "required": ["rev", "text"],
+  "properties": {
+    "rev": { "type": "integer", "minimum": 1, "description": "The message revision this ghost answers." },
+    "text": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "Letters, digits, punctuation and spaces, at most 60 characters. The window uppercases it and drops characters that are not in the table. \"\" clears."
+    },
+    "reason": { "type": "string", "description": "A word or two on why, shown in the status line after \"ghost: claude\", e.g. spell." }
+  }
+}

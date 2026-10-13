@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lets.dev/schemas/uniques/mors/export.json",
+  "title": "mors.export (event)",
+  "description": "Send to Claude (Ctrl+Enter): a handoff. The engine saves it as a session and closes the window. Also the shape of the mors.snapshot reply, which is the same payload: an empty message cannot be sent, so text and morse are never empty on mors.export, but a snapshot of an empty tape may have them empty. The engine may add session. Decode morse yourself, say in one line what you read, then treat the decoded text as the prompt and answer in the transcript.",
+  "type": "object",
+  "required": ["label", "morse", "text", "letters", "words", "wpm", "view", "reply", "stats"],
+  "properties": {
+    "session": {
+      "type": "object",
+      "description": "Added by the engine when it stores the handoff; not sent by the page. On a snapshot reply it carries only id and saved.",
+      "properties": {
+        "id": { "type": "string", "description": "The saved session's id." },
+        "handoff": { "type": "boolean", "description": "true when the engine is closing the window (the default); false when the config says handoff \"stay\"." },
+        "saved": { "type": "boolean", "description": "true once the session is stored." },
+        "summary": { "type": "string", "description": "The engine's one-line summary of the session." }
+      }
+    },
+    "label": { "type": "string", "description": "The decoded text (at most 60 characters, # groups included) plus \" · mors\", e.g. \"SHOW ME THE TESTS · mors\". The saved session's summary." },
+    "morse": { "$ref": "#/$defs/morse" },
+    "text": { "$ref": "#/$defs/text" },
+    "letters": { "type": "integer", "minimum": 0, "description": "Number of letter groups in the message." },
+    "words": { "type": "integer", "minimum": 0, "description": "Number of words in the message." },
+    "wpm": { "type": "number", "minimum": 3, "maximum": 30, "description": "Speed in words per minute when the message was sent." },
+    "view": { "$ref": "#/$defs/view" },
+    "reply": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "description": "Claude's track: what mors.play has played so far in this window, in the same notation as morse. Empty when nothing was played."
+    },
+    "ends": {
+      "enum": ["AR", "SK", "K"],
+      "description": "Present when the message ends with that sign: AR end of message, SK end of contact, K over. Absent otherwise."
+    },
+    "stats": { "$ref": "#/$defs/stats" }
+  },
+  "$defs": {
+    "morse": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "maxLength": 12000,
+      "description": "The message as elements: . and - only, letters separated by a space, words by \" / \". At most 4 000 elements; the limit here counts the separators too."
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "The window's decode, uppercase, words separated by one space. # marks a group that is not in the table; prosigns read <AR>, <SK>, <SOS>."
+    },
+    "view": {
+      "type": "object",
+      "description": "Which of Doto's extras are open. key is the minimum.",
+      "required": ["controller", "readback", "chart"],
+      "properties": {
+        "controller": { "enum": ["key", "full"], "description": "key is the minimum; full is the full controller." },
+        "readback": { "type": "boolean", "description": "The decoded characters are shown on the tape." },
+        "chart": { "type": "boolean", "description": "The alphabet chart is open." }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "description": "What the human did in this window so far.",
+      "required": ["dots", "dashes", "letters", "words", "errors", "typed", "assisted", "ghostsAccepted", "ghostsRejected"],
+      "properties": {
+        "dots": { "type": "integer", "minimum": 0, "description": "Dots keyed." },
+        "dashes": { "type": "integer", "minimum": 0, "description": "Dashes keyed." },
+        "letters": { "type": "integer", "minimum": 0, "description": "Letters closed." },
+        "words": { "type": "integer", "minimum": 0, "description": "Words closed." },
+        "errors": { "type": "integer", "minimum": 0, "description": "Error prosigns (eight dots) keyed." },
+        "typed": { "type": "integer", "minimum": 0, "description": "Input typed instead of keyed: the Say it box, or typed . - _ keys." },
+        "assisted": { "type": "integer", "minimum": 0, "description": "Letters the window keyed for the human with Tab or Shift+Tab." },
+        "ghostsAccepted": { "type": "integer", "minimum": 0, "description": "Ghosts keyed to the end." },
+        "ghostsRejected": { "type": "integer", "minimum": 0, "description": "Ghosts dropped by Esc, a letter that did not match, or Clear." }
+      }
+    }
+  }
+}

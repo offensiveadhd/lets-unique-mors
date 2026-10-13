@@ -1,0 +1,10 @@
+{
+  "name": "lets-unique-mors",
+  "version": "0.1.0",
+  "description": "mors — talk in Morse: one key, one tape; key your message in dots and dashes and send it to Claude, who reads it as a prompt. Only Doto helps you craft it.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": { "validate": "node scripts/validate.mjs" },
+  "repository": { "type": "git", "url": "https://github.com/TikoTikTok/lets-unique-mors.git" }
+}

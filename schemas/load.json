@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lets.dev/schemas/uniques/mors/load.json",
+  "title": "mors.load (command)",
+  "description": "The restore command: renders the payload (a session's mors.export) and Claude's reply track without emitting ghost or accept events, bumps rev, and emits one mors.changed with by \"restore\". A load in the first 8 s after boot wins over the sessionStorage draft. The engine sends it when a saved session is resumed.",
+  "type": "object",
+  "required": ["morse"],
+  "properties": {
+    "morse": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "maxLength": 12000,
+      "description": "The message as elements: . and - only, letters separated by a space, words by \" / \". At most 4 000 elements; the limit here counts the separators too."
+    },
+    "text": { "type": "string", "maxLength": 1000, "description": "Ignored: the window decodes morse itself. Kept so a saved export can be sent back as it is." },
+    "wpm": { "type": "number", "minimum": 3, "maximum": 30, "description": "Speed in words per minute to restore." },
+    "view": {
+      "type": "object",
+      "description": "Which of Doto's extras to restore.",
+      "properties": {
+        "controller": { "enum": ["key", "full"], "description": "key is the minimum; full is the full controller." },
+        "readback": { "type": "boolean", "description": "The decoded characters are shown on the tape." },
+        "chart": { "type": "boolean", "description": "The alphabet chart is open." }
+      }
+    },
+    "reply": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "description": "Claude's track to restore: what mors.play had played, in the same notation as morse."
+    },
+    "ghost": {
+      "type": "object",
+      "description": "A ghost to show after the message. The load emits no ghost event for it.",
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string", "maxLength": 60, "description": "The letters to key next." },
+        "keyed": { "type": "integer", "minimum": 0, "description": "How many of the ghost's letters are already done." }
+      }
+    }
+  }
+}

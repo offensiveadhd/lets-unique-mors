@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lets.dev/schemas/uniques/mors/ask.json",
+  "title": "mors.ask (event)",
+  "description": "Help asked through Doto, with the message as it stands. kind \"spell\": the human wants to say question (the words they typed); answer with mors.suggest {rev, text, reason: \"spell\"} so the letters show as a ghost for them to key. kind \"check\": read morse yourself and say in one line what you read; if a group is off, say which and what it should be, and do not fix it unless they ask. kind \"free\": a plain question from the full controller's Ask box; answer in chat, and in Morse on the tape when it fits (mors.play).",
+  "type": "object",
+  "required": ["kind", "question", "morse", "text", "rev", "view", "source"],
+  "properties": {
+    "kind": { "enum": ["spell", "check", "free"], "description": "spell = Spell a word for me; check = Check what I keyed; free = a question typed in the full controller's Ask box." },
+    "question": { "type": "string", "minLength": 1, "description": "For spell, the words the human typed. For check, the word \"check\". For free, their question." },
+    "morse": { "$ref": "#/$defs/morse" },
+    "text": { "$ref": "#/$defs/text" },
+    "rev": { "$ref": "#/$defs/rev" },
+    "view": { "$ref": "#/$defs/view" },
+    "source": { "enum": ["menu", "form"], "description": "menu = picked from Doto's menu; form = typed into a one-line form (the spell line under the toolbar, or the Ask box)." }
+  },
+  "$defs": {
+    "rev": { "type": "integer", "minimum": 1, "description": "Message revision; starts at 1 on an empty tape and never goes down. Send it back with mors.suggest." },
+    "morse": {
+      "type": "string",
+      "pattern": "^[.\\- /]*$",
+      "maxLength": 12000,
+      "description": "The message as elements: . and - only, letters separated by a space, words by \" / \". At most 4 000 elements; the limit here counts the separators too."
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "The window's decode, uppercase, words separated by one space. # marks a group that is not in the table; prosigns read <AR>, <SK>, <SOS>."
+    },
+    "view": {
+      "type": "object",
+      "description": "Which of Doto's extras are open. key is the minimum.",
+      "required": ["controller", "readback", "chart"],
+      "properties": {
+        "controller": { "enum": ["key", "full"], "description": "key is the minimum; full is the full controller." },
+        "readback": { "type": "boolean", "description": "The decoded characters are shown on the tape." },
+        "chart": { "type": "boolean", "description": "The alphabet chart is open." }
+      }
+    }
+  }
+}

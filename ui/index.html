@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Mors — lets</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/sdk/lets-shell.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-unique="mors">
+<main id="app" class="mors" data-controller="key" data-readback="false" data-chart="false" data-sound="on" data-playing="false">
+
+  <header id="topbar" class="topbar glass">
+    <nav id="toolbar" class="toolbar" role="toolbar" aria-label="Mors tools">
+      <div class="tb-brand" title="mors · lets">
+        <span id="status-dot" class="tb-dot" data-status="connecting" role="img" aria-label="Connecting to Claude"></span>
+        <span class="tb-name">mors</span>
+      </div>
+
+      <div class="tb-group" role="group" aria-label="Speed">
+        <span id="wpm-chip" class="tb-chip" title="Words per minute. auto: the speed follows your hand">
+          <b id="wpm-val">12</b><span class="tb-unit">wpm</span><span id="wpm-auto" class="tb-sub" data-on="true">auto</span>
+        </span>
+      </div>
+
+      <div class="tb-group" role="group" aria-label="Claude">
+        <button type="button" class="tb-btn tb-primary" id="btn-send" data-act="send" title="Send the message to Claude (Ctrl+Enter)" aria-label="Send to Claude">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11.5 16-7-6.5 16-2.5-6.5z"/><path d="m11 14 9-9.5"/></svg>
+          <span>Send to Claude</span>
+        </button>
+      </div>
+
+      <div class="tb-group tb-end" role="group" aria-label="Panels">
+        <button type="button" class="tb-btn" id="btn-sound" data-act="sound" aria-pressed="true" title="Sound on or off (M)" aria-label="Sound">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path class="snd-wave" d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/><path class="snd-wave" d="M17.8 7a7 7 0 0 1 0 10"/><path class="snd-off" d="m16 10 4 4M20 10l-4 4"/></svg>
+        </button>
+        <button type="button" class="tb-btn" data-act="chat" title="Toggle chat (Ctrl+/)" aria-label="Toggle chat">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 15 14.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5z"/><path d="M16.5 9H20a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 20 18h-1v2.5L16 18h-4.5"/></svg>
+        </button>
+        <button type="button" class="tb-btn" data-act="entity" title="Show or hide your companion (Ctrl+Space)" aria-label="Toggle companion">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12.5" r="7"/><path d="M9.6 11.3v1.8M14.4 11.3v1.8"/><path d="M5 5.5a9.8 9.8 0 0 1 14 0" stroke-opacity=".5"/></svg>
+        </button>
+        <button type="button" class="tb-btn" id="btn-help" data-act="help" aria-expanded="false" aria-controls="help" title="Shortcuts (?)" aria-label="Keyboard shortcuts">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.4v.5M12 16.6v.1"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <form id="spell" class="ask" hidden autocomplete="off">
+      <div class="ask-row">
+        <span class="ask-chip">spell</span>
+        <label for="spell-input" class="sr-only">What do you want to say?</label>
+        <input id="spell-input" type="text" maxlength="60" placeholder="What do you want to say? Doto shows the letters, you key them.">
+        <button type="submit" class="tb-btn tb-primary"><span>Spell</span></button>
+      </div>
+    </form>
+  </header>
+
+  <div id="work" class="work">
+
+    <section id="tape-wrap" class="tape-wrap" aria-label="Tape">
+      <div id="tape" class="tape" role="log" aria-label="Your message">
+        <div id="track-you" class="track track-you">
+          <span class="track-label" aria-hidden="true">you</span>
+          <div id="row-you" class="row"></div>
+        </div>
+        <div id="track-claude" class="track track-claude" hidden>
+          <span class="track-label" aria-hidden="true">Doto</span>
+          <div id="row-claude" class="row"></div>
+        </div>
+      </div>
+      <p id="tape-empty" class="tape-empty lets-dim">Key something. Hold <kbd>Space</kbd>, or the key.</p>
+      <p id="readout" class="readout" hidden aria-live="polite"></p>
+    </section>
+
+    <section id="panel" class="panel glass" hidden aria-label="Full controller">
+      <form id="sayit" class="sayit" autocomplete="off">
+        <label for="sayit-input" class="panel-label">Say it</label>
+        <input id="sayit-input" type="text" maxlength="200" placeholder="Type words; Enter keys them for you">
+        <button type="submit" class="lets-btn lets-btn-sm">Key it</button>
+      </form>
+      <div id="grid" class="grid" role="group" aria-label="Letters, digits and signs: press one to key it"></div>
+      <div class="panel-row">
+        <button type="button" class="lets-btn lets-btn-sm" id="btn-undo-letter" title="Erase the last letter (Backspace)">Undo letter</button>
+        <button type="button" class="lets-btn lets-btn-sm lets-btn-ghost" id="btn-clear" title="Erase everything">Clear</button>
+        <label class="speed" for="speed"><span class="panel-label">Speed</span>
+          <input id="speed" type="range" min="3" max="30" step="1" value="12" aria-valuetext="12 words per minute">
+          <b id="speed-val">12 wpm</b>
+        </label>
+        <label class="chk"><input id="auto" type="checkbox" checked> auto</label>
+        <label class="chk"><input id="sound" type="checkbox" checked> sound</label>
+        <button type="button" class="lets-btn lets-btn-sm" id="btn-chart" aria-expanded="false" aria-controls="chart">Chart</button>
+      </div>
+      <form id="askform" class="askform" autocomplete="off">
+        <label for="ask-input" class="panel-label">Ask</label>
+        <input id="ask-input" type="text" maxlength="500" placeholder="Ask Doto anything about Morse or your message">
+        <button type="submit" class="lets-btn lets-btn-sm">Ask</button>
+      </form>
+    </section>
+
+    <section id="keyer" class="keyer" aria-label="The key">
+      <div class="key-stage">
+        <div id="lamp" class="lamp" data-on="off" aria-hidden="true"></div>
+        <button type="button" id="key" class="key" aria-label="Morse key: hold to key" aria-pressed="false">
+          <span class="key-cap" aria-hidden="true"></span>
+        </button>
+      </div>
+      <p id="hint" class="hint lets-dim">Hold <kbd>Space</kbd> or the key · pause for a letter, longer for a word · <kbd>Backspace</kbd> erases a letter · <span class="hint-dots">········</span> erases the word</p>
+    </section>
+
+    <footer id="statusline" class="statusline lets-dim" aria-live="off">
+      <span id="st-count">0 words · 0 letters</span>
+      <span class="st-sep">·</span><span id="st-wpm">12 wpm</span>
+      <span class="st-sep">·</span><span>ghost: <b id="st-ghost">—</b></span>
+      <span class="st-sep">·</span><span id="st-readback">read-back off</span>
+      <span id="st-play" hidden><span class="st-sep">·</span>Doto is keying…</span>
+    </footer>
+  </div>
+
+  <section id="chart" class="chart glass" hidden aria-label="Morse chart" tabindex="-1">
+    <header class="chart-head">
+      <h2>International Morse</h2>
+      <button type="button" class="tb-btn" id="btn-chart-close" aria-label="Close the chart">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+      </button>
+    </header>
+    <div id="chart-cols" class="chart-cols"></div>
+    <p class="chart-foot lets-dim">dot 1 · dash 3 · inside a letter 1 · between letters 3 · between words 7 · <span class="hint-dots">········</span> I made a mistake</p>
+  </section>
+
+  <section id="help" class="help glass" hidden aria-label="Keyboard shortcuts">
+    <h2>Shortcuts</h2>
+    <dl>
+      <dt>Space (hold)</dt><dd>the key</dd>
+      <dt>. - _</dt><dd>a typed dot or dash</dd>
+      <dt>/</dt><dd>a word gap (typed input)</dd>
+      <dt>Backspace · Ctrl+Backspace</dt><dd>erase the last element or letter · the last word</dd>
+      <dt>Tab · Shift+Tab</dt><dd>with a ghost: key its next letter · the rest of it</dd>
+      <dt>Esc</dt><dd>dismiss the ghost, then close things</dd>
+      <dt>Enter</dt><dd>send, once AR, SK or K armed the button</dd>
+      <dt>Ctrl+Enter</dt><dd>send to Claude</dd>
+      <dt>Ctrl+Z</dt><dd>undo the last erase, insert or clear</dd>
+      <dt>M</dt><dd>sound on · off</dd>
+      <dt>Right-click · Ctrl+Space</dt><dd>call your companion</dd>
+      <dt>Ctrl+/</dt><dd>chat with Claude</dd>
+    </dl>
+  </section>
+
+  <div id="d-toast" class="d-toast" role="status" aria-live="polite"></div>
+  <div id="sr-live" class="sr-only" aria-live="polite"></div>
+</main>
+<script type="module" src="./mors.js"></script>
+</body>
+</html>
