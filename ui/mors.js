@@ -65,7 +65,7 @@ function h(tag, attrs, ...kids) {
 function debounce(fn, ms) {
   let t = 0;
   const d = () => { clearTimeout(t); t = setTimeout(() => { t = 0; fn(); }, ms); };
-  d.flush = () => { if (t) { clearTimeout(t); t = 0; fn(); } };
+  d.flush = () => { if (t) { clearTimeout(t); t = 0; fn(); return true; } return false; };
   d.cancel = () => { clearTimeout(t); t = 0; };
   return d;
 }
@@ -191,7 +191,7 @@ function commitLetter(group, { by = 'human', assisted = false } = {}) {
   const d = decodeGroup(group);
   msg.push({ m: group, c: d.char, ok: d.known });
   stats.letters++;
-  if (assisted) stats.assisted++;
+  if (assisted) { stats.assisted++; if (ghost) ghost.assisted++; }
   if (d.char === '<AR>') arm('AR'); else if (d.char === '<SK>') arm('SK'); else arm(null);
   if (d.char === '<SOS>') react('startled');
   bumpRev();
@@ -212,7 +212,7 @@ function closeWord({ by = 'human', settle = true } = {}) {
   if (by === 'human') matchGhostGap();
   renderAll();
   saveDraft();
-  if (settle) { changedBy = by; emitChanged.flush(); emitChangedNow(by); }
+  if (settle) { changedBy = by; if (!emitChanged.flush()) emitChangedNow(by); }   // one event per settle, even after a pending erase
   else scheduleChanged(by);
 }
 
@@ -226,8 +226,7 @@ function arm(sign) {
 function eraseBack() {
   if (assisting) return;
   if (keyer.open) {
-    keyer.open = keyer.open.slice(0, -1);
-    if (!keyer.open) keyer.dropOpen(); else keyer.pause();
+    keyer.trimOpen();            // the open letter is not settled yet: nothing to tell Claude
     renderAll();
     return;
   }
@@ -261,19 +260,22 @@ function eraseWordByError() {
 function eraseAll(by = 'human') {
   if (assisting) stopAssist();
   keyer.dropOpen();
+  if (ghost) dropGhost('cleared');
   if (!msg.length) { renderAll(); return; }
   pushUndo();
   msg = [];
-  if (ghost) dropGhost('cleared');
   afterErase(by);
+}
+/** After a partial erase or an undo: the ghost stays and re-anchors to the end of what is left. */
+function reanchorGhost() {
+  if (!ghost) return;
+  if (msg.length < ghost.anchor) ghost.anchor = msg.length;
+  ghost.keyed = Math.min(ghost.chars.length, countKeyedTokens());
 }
 function afterErase(by) {
   arm(null);
   bumpRev();
-  if (ghost) {
-    if (msg.length < ghost.anchor) dropGhost('cleared');
-    else ghost.keyed = Math.min(ghost.keyed, countKeyedTokens());
-  }
+  reanchorGhost();
   renderAll();
   saveDraft();
   scheduleChanged(by);
@@ -300,7 +302,7 @@ function undoLast() {
   msg = snap;
   arm(null);
   bumpRev();
-  if (ghost) { if (msg.length < ghost.anchor) dropGhost('cleared'); else ghost.keyed = Math.min(ghost.chars.length, countKeyedTokens()); }
+  reanchorGhost();
   renderAll();
   saveDraft();
   scheduleChanged('human');
@@ -312,7 +314,7 @@ function setGhost(ghostRev, textIn, reason, { silent = false } = {}) {
   const chars = ghostChars(textIn);
   if (!chars.length) { if (ghost) { ghost = null; renderAll(); } return; }
   // the anchor is the end of the message; a gap at the end is the start of the next word
-  ghost = { rev: ghostRev ?? rev, text: chars.join(''), chars, keyed: 0, anchor: msg.length, reason: reason || null };
+  ghost = { rev: ghostRev ?? rev, text: chars.join(''), chars, keyed: 0, anchor: msg.length, reason: reason || null, assisted: 0 };
   if (!silent) srLive.textContent = `Spell: ${ghost.text}`;
   renderAll();
 }
@@ -329,7 +331,7 @@ function finishGhost() {
   const g = ghost;
   ghost = null;
   stats.ghostsAccepted++;
-  lets.emit('mors.ghost.accept', { rev, text: g.text, assisted: stats.assisted });
+  lets.emit('mors.ghost.accept', { rev, text: g.text, assisted: g.assisted });
   react('wink');
   renderAll();
 }
@@ -349,6 +351,14 @@ async function keyGhost(how) {
   if (!ghost || assisting) return;
   if (keyer.open) keyer.flush();
   const g = ghost;
+  // a leading space is the word gap: close the word now (the matcher consumes it); the schedule would drop it
+  while (ghost === g && g.chars[g.keyed] === ' ') {
+    const before = g.keyed;
+    if (msg.length && !msg[msg.length - 1].gap) closeWord({ by: 'human', settle: true });
+    if (ghost === g && g.keyed === before) g.keyed++;
+    if (ghost === g && g.keyed >= g.chars.length) { finishGhost(); return; }
+  }
+  if (ghost !== g) return;
   const steps = how === 'rest' ? g.chars.length - g.keyed : 1;
   const seq = [];
   for (let i = 0; i < steps && g.keyed + i < g.chars.length; i++) {
@@ -430,13 +440,15 @@ function pressEnd(at) {
   keyBtn.setAttribute('aria-pressed', 'false');
 }
 /** A typed dot or dash (. - _ keys, Enter on the key): no press, a short flash. */
+let typedFlash = 0;
 function typedElement(el) {
   if (assisting) return;
   if (!keyer.typed(el)) return;
   stats.typed++;
   setLamp('you', true);
   toneOn('you');
-  setTimeout(() => { if (!keyer.down) { setLamp('you', false); toneOff('you'); } }, el === '.' ? TYPED_UNIT * 0.6 : TYPED_UNIT * 1.6);
+  clearTimeout(typedFlash);
+  typedFlash = setTimeout(() => { if (!keyer.down) { setLamp('you', false); toneOff('you'); } }, el === '.' ? TYPED_UNIT * 0.6 : TYPED_UNIT * 1.6);
 }
 
 keyBtn.addEventListener('pointerdown', (e) => {
@@ -659,7 +671,7 @@ sayitForm.addEventListener('submit', async (e) => {
   await assistPlay(tokens, { by: 'human' });
 });
 
-function setView(patch, by) {
+function setView(patch, by, { silent = false } = {}) {
   const next = { ...view };
   if (patch.controller === 'key' || patch.controller === 'full') next.controller = patch.controller;
   if (typeof patch.readback === 'boolean') next.readback = patch.readback;
@@ -667,8 +679,15 @@ function setView(patch, by) {
   const changed = next.controller !== view.controller || next.readback !== view.readback || next.chart !== view.chart;
   view = next;
   applyView();
-  if (changed) lets.emit('mors.mode', { view: { ...view }, by });
+  if (changed && !silent) lets.emit('mors.mode', { view: { ...view }, by });
   return changed;
+}
+/** Keeps tokens within the message limits of CONTRACT §1 by dropping from the start. */
+function trimTokens(tokens) {
+  const out = tokens.slice();
+  while (out.length && (countElements(out) > MAX_ELEMENTS || toText(out).length > TEXT_MAX)) out.shift();
+  while (out.length && out[0].gap) out.shift();
+  return out;
 }
 
 // ───────────────────────────── 9. incoming commands ─────────────────────────────
@@ -685,8 +704,10 @@ const COMMANDS = {
     const hasText = typeof d.text === 'string';
     const hasMorse = typeof d.morse === 'string';
     if (!hasText && !hasMorse) throw new Error('expected {text} or {morse}');
-    const tokens = hasText && d.text.trim() ? encodeTokens(d.text) : hasMorse && d.morse.trim() ? parse(d.morse) : [];
-    if (!tokens.length) { stopPlays(); return; }
+    const empty = (hasText ? d.text : d.morse).trim() === '';
+    if (empty) { stopPlays(); return; }                                        // {text: ""} stops and empties the queue
+    const tokens = hasText ? encodeTokens(d.text) : parse(d.morse);
+    if (!tokens.length) throw new Error('nothing in there to play');
     if (countElements(tokens) > MAX_ELEMENTS) throw new Error('too long to play');
     const unit = d.wpm != null ? wpmToUnit(d.wpm) : keyer.unit;
     enqueuePlay({ id: typeof d.id === 'string' ? d.id.slice(0, 60) : `p_${Date.now().toString(36)}`, tokens, unit, silent: !!d.silent });
@@ -717,23 +738,22 @@ const COMMANDS = {
   },
   'mors.erase': (d) => {
     if (d.all === true) { eraseAll('claude'); return; }
-    const n = int(d.letters) ?? int(d.words);
-    if (n == null || n < 1) throw new Error('expected {letters: n} | {words: n} | {all: true}');
+    const nl = int(d.letters, 0);
+    const nw = int(d.words, 0);
+    const n = nl > 0 ? nl : nw > 0 ? nw : 0;
+    if (!n) throw new Error('expected {letters: n} | {words: n} | {all: true}');
     if (assisting) stopAssist();
     keyer.dropOpen();
     if (!msg.length) return;
     pushUndo();
-    if (int(d.letters) != null) {
+    if (nl > 0) {
       for (let i = 0; i < n && msg.length; i++) { while (msg.length && msg[msg.length - 1].gap) msg.pop(); msg.pop(); }
     } else {
       for (let i = 0; i < n && msg.length; i++) { while (msg.length && msg[msg.length - 1].gap) msg.pop(); while (msg.length && !msg[msg.length - 1].gap) msg.pop(); }
     }
     afterErase('claude');
   },
-  'mors.reveal': (d) => {
-    if (!('controller' in d) && !('readback' in d) && !('chart' in d)) throw new Error('expected {controller?, readback?, chart?}');
-    setView(d, 'claude');
-  },
+  'mors.reveal': (d) => { setView(d, 'claude'); },      // only the keys given change; {} is a no-op
   'mors.set': (d) => {
     const patch = {};
     if (d.wpm != null) { const w = num(d.wpm); if (w == null || w < 3 || w > 30) throw new Error('wpm must be 3..30'); patch.wpm = w; }
@@ -749,12 +769,12 @@ const COMMANDS = {
     if (assisting) stopAssist();
     stopPlays();
     keyer.dropOpen();
-    msg = parse(d.morse).slice(-MAX_ELEMENTS);
+    msg = trimTokens(parse(d.morse));
     while (msg.length && msg[msg.length - 1].gap) msg.pop();
-    reply = typeof d.reply === 'string' ? parse(d.reply) : [];
+    reply = typeof d.reply === 'string' ? trimTokens(parse(d.reply)) : [];
     trackClaude.hidden = reply.length === 0;
     if (d.wpm != null && num(d.wpm) != null) setSpeed({ wpm: num(d.wpm) });
-    if (isObj(d.view)) setView(d.view, 'claude');
+    if (isObj(d.view)) setView(d.view, 'claude', { silent: true });   // a load is silent except its mors.changed
     ghost = null;
     if (isObj(d.ghost) && typeof d.ghost.text === 'string') { setGhost(null, d.ghost.text, null, { silent: true }); if (ghost) ghost.keyed = Math.max(0, Math.min(ghost.chars.length, int(d.ghost.keyed, 0))); }
     undo.length = 0;
@@ -763,8 +783,8 @@ const COMMANDS = {
     lastChangedMorse = '';
     renderAll();
     saveDraft();
-    changedBy = 'restore';
-    emitChanged.flush();
+    emitChanged.cancel();          // whatever was pending is superseded by the load
+    changedBy = null;
     emitChangedNow('restore');
   },
   'mors.snapshot': (_d, m) => lets.emitNow('mors.snapshot', snapshotPayload(), m?.id ? { re: m.id } : undefined),
@@ -826,17 +846,27 @@ function renderTape() {
   fillRow(rowClaude, reply, replyOpen ? replyOpen.m : '', null);
   tapeEmpty.hidden = msg.length > 0 || !!open || !!ghost || reply.length > 0 || !!replyOpen;
 }
+let readoutShown = '';
+/** The decoded text under the tape. Appends when the text only grew, so a screen reader hears the new letters, not the whole line again. */
 function renderReadout() {
   const show = view.readback || view.controller === 'full';
   readout.hidden = !show;
-  if (!show) return;
-  readout.textContent = '';
+  if (!show) { readoutShown = ''; return; }
+  const full = msg.map((tok) => (tok.gap ? ' ' : tok.c)).join('');
+  const grew = readoutShown !== '' && full.length > readoutShown.length && full.startsWith(readoutShown);
+  if (!grew) { readout.textContent = ''; readoutShown = ''; }
   if (!msg.length && !keyer.open) { readout.append(h('span', { class: 'lets-dim', text: 'nothing yet' })); return; }
-  for (const t of msg) {
-    if (t.gap) readout.append(' ');
-    else if (t.ok) readout.append(t.c);
-    else readout.append(h('span', { class: 'bad', text: '#', title: `${pretty(t.m)} is not in the table` }));
+  let seen = 0;
+  for (const tok of msg) {
+    const piece = tok.gap ? ' ' : tok.c;
+    seen += piece.length;
+    if (seen <= readoutShown.length) continue;                                  // already shown
+    if (tok.gap) readout.append(' ');
+    else if (tok.ok) readout.append(tok.c);
+    else readout.append(h('span', { class: 'bad', text: '#', title: `${pretty(tok.m)} is not in the table` }));
   }
+  readoutShown = full;
+  readout.scrollTop = readout.scrollHeight;
 }
 function renderChip() {
   const w = unitToWpm(keyer.unit);

@@ -27,7 +27,7 @@ Manual: clone this repo into `~/.lets/uniques/mors`, or set `LETS_UNIQUES_DIRS=<
 | **Full controller** | Doto's *Full controller*. A panel with the readout, a **Say it** box (type words, `Enter` keys them at the current speed), a grid of letter buttons, **Undo letter**, **Clear**, a speed slider (3 to 30 wpm) with **auto**, **sound**, **Chart**, and an **Ask** box for a plain question to Claude. Below 700 px tall it is a bottom drawer. |
 | **Claude's reply track** | Claude can talk back. A second track under yours: the lamp blinks magenta, a lower tone sounds, and the symbols appear as they play. Plays queue. Your key stays live while Doto is keying. |
 | **Send to Claude** | Hands the message over as a prompt (`Ctrl+Enter`). Claude says in one line what it read, then does what the message asks, in Claude Code. End with `AR` (end of message), `SK` (end of contact) or a word `K` (over) and the button glows and takes the next `Enter`. Nothing is sent by itself. Say *continue* to bring the window back with your message and Claude's track. |
-| **Keyboard** | Everything is reachable with Tab, every control has a name, and `?` lists the shortcuts. `Space` is the key, `M` toggles sound, `Esc` closes the innermost open thing, `Ctrl+Enter` sends. |
+| **Keyboard** | Everything is reachable with Tab, every control has a name, and `?` lists the shortcuts. `Space` is the key, `M` toggles sound, `Esc` closes the innermost open thing, `Ctrl+Enter` sends. While a ghost shows, `Tab` keys it instead of moving focus: press `Esc` first to move on. |
 
 A few rules of the road:
 

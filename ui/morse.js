@@ -262,6 +262,18 @@ export class Keyer {
     if (this.inWord) this._armWord(this.lastTyped ? TYPED_UNIT : this.unit);
   }
 
+  /** Remove the last element of the open letter (Backspace); the rest keeps closing on silence. Returns false when nothing was open. */
+  trimOpen() {
+    if (!this.open) return false;
+    this.open = this.open.slice(0, -1);
+    if (!this.open) { this.dropOpen(); return true; }
+    const unit = this.lastTyped ? TYPED_UNIT : this.unit;
+    this._clearTimers();
+    this._lt = setTimeout(() => { this._lt = 0; this._closeLetter(); }, LETTER_GAP * unit);
+    this._wt = setTimeout(() => { this._wt = 0; this._closeWord(); }, WORD_GAP * unit);
+    return true;
+  }
+
   /** Stop the timers; the open letter stays open until the next element or flush. */
   pause() { this._clearTimers(); }
 
