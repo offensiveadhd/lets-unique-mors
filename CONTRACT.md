@@ -1,6 +1,6 @@
 # mors — build contract
 
-The behaviour spec of **mors**, the window you talk through in Morse. The shell (companion, chat, components, toasts) and the theme are the engine's: see [docs/UI-CONTRACT.md](https://github.com/TikoTikTok/lets/blob/main/docs/UI-CONTRACT.md) in the lets repo. Engine requirement: lets **0.4.0** or later (handoff sessions). Nothing here needs a new engine endpoint.
+The behaviour spec of **mors**, the window you talk through in Morse. The shell (companion, chat, components, toasts) and the theme are the engine's: see [docs/UI-CONTRACT.md](https://github.com/offensiveadhd/lets/blob/main/docs/UI-CONTRACT.md) in the lets repo. Engine requirement: lets **0.4.0** or later (handoff sessions). Nothing here needs a new engine endpoint.
 
 ## 0 The idea
 

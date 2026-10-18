@@ -1,6 +1,6 @@
 <p align="center"><img src="icon.svg" width="72" alt=""></p>
 <h1 align="center">mors</h1>
-<p align="center"><b>Talk in Morse.</b><br>A <a href="https://github.com/TikoTikTok/lets">lets</a> unique: one key, one tape. Key your message in dots and dashes and send it to Claude, who reads it as a prompt and does what it says. The window assumes you know Morse. Only Doto helps you craft the message, and Claude can answer in Morse on the tape.</p>
+<p align="center"><b>Talk in Morse.</b><br>A <a href="https://github.com/offensiveadhd/lets">lets</a> unique: one key, one tape. Key your message in dots and dashes and send it to Claude, who reads it as a prompt and does what it says. The window assumes you know Morse. Only Doto helps you craft the message, and Claude can answer in Morse on the tape.</p>
 
 ---
 
@@ -79,4 +79,4 @@ Validate with `node scripts/validate.mjs` here, or `node engine/bin/lets.mjs val
 
 ## License
 
-MIT © TikoTikTok
+MIT © offensiveadhd
