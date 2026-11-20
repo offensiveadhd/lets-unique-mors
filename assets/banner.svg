@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" role="img" aria-labelledby="mb-t mb-d">
+<title id="mb-t">mors</title>
+<desc id="mb-d">mors: talk in Morse. One round key with a lamp above it and a tape with two tracks. The key is pressed in time and the lamp blinks cyan while dots, drawn as discs, and dashes, drawn as bars, spell HEY on the track marked you. Then the lamp blinks magenta and OK plays on the track marked Doto, the reply.</desc>
+<style>text{font-family:Inter,"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}.m{font-family:ui-monospace,"Cascadia Code",SFMono-Regular,Menlo,Consolas,monospace}</style>
+<defs>
+<radialGradient id="mb-bg" cx="70%" cy="40%" r="85%"><stop offset="0" stop-color="#2b1a52"/><stop offset="1" stop-color="#120b1f"/></radialGradient>
+<radialGradient id="mb-cy" cx="96%" cy="100%" r="42%"><stop offset="0" stop-color="#6bf0ff" stop-opacity=".13"/><stop offset="1" stop-color="#6bf0ff" stop-opacity="0"/></radialGradient>
+<radialGradient id="mb-mg" cx="0%" cy="0%" r="48%"><stop offset="0" stop-color="#ff6bd6" stop-opacity=".12"/><stop offset="1" stop-color="#ff6bd6" stop-opacity="0"/></radialGradient>
+<radialGradient id="mb-orb" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#e3ccff"/><stop offset=".45" stop-color="#a66bff"/><stop offset="1" stop-color="#5a2fb0"/></radialGradient>
+<radialGradient id="mb-tile" cx="50%" cy="42%" r="70%"><stop offset="0" stop-color="#2b1a52"/><stop offset="1" stop-color="#120b1f"/></radialGradient>
+<linearGradient id="mb-ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c49bff"/><stop offset="1" stop-color="#ff8fe0"/></linearGradient>
+<linearGradient id="mb-btn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b98aff"/><stop offset="1" stop-color="#8a4dff"/></linearGradient>
+<linearGradient id="mb-wm" gradientUnits="userSpaceOnUse" x1="0" y1="29" x2="0" y2="167"><stop offset="0" stop-color="#f8f4ff"/><stop offset="1" stop-color="#cdbbff"/></linearGradient>
+<filter id="mb-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="mb-soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="mb-wmg" x="-20%" y="-70%" width="140%" height="240%"><feGaussianBlur stdDeviation="6" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .34 0" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="mb-ghost" x="-20%" y="-90%" width="140%" height="280%"><feGaussianBlur stdDeviation="1.5"/></filter>
+<pattern id="mb-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="#5a44a0" fill-opacity=".42"/></pattern>
+</defs>
+<rect x="1" y="1" width="1278" height="398" rx="28" fill="url(#mb-bg)"/>
+<rect x="1" y="1" width="1278" height="398" rx="28" fill="url(#mb-cy)"/>
+<rect x="1" y="1" width="1278" height="398" rx="28" fill="url(#mb-mg)"/>
+<rect x="1" y="1" width="1278" height="398" rx="28" fill="url(#mb-grid)"/>
+<rect x="1" y="1" width="1278" height="398" rx="28" fill="none" stroke="#5a44a0" stroke-opacity=".65" stroke-width="2"/>
+<circle cx="79" cy="90" r="6" fill="url(#mb-orb)"/>
+<text class="m" x="96" y="96" font-size="18" letter-spacing=".6" fill="#a99cd0">lets unique · from the store</text>
+<g transform="translate(72 122)"><g transform="translate(12 -34.8) scale(1.2)" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="20"><g stroke="url(#mb-wm)" filter="url(#mb-wmg)"><path transform="translate(0 0)" d="M0 57V121M0 79a22 22 0 0 1 44 0V121M44 79a22 22 0 0 1 44 0V121"/><path transform="translate(122 0)" d="M0 89a32 32 0 1 0 64 0a32 32 0 1 0-64 0"/><path transform="translate(220 0)" d="M0 57V121M0 85A28 28 0 0 1 46 63.5"/><path transform="translate(290 0)" d="M39.2 63.8A21 16 0 1 0 22 89A21 16 0 1 1 4.8 114.2"/></g></g></g>
+<text x="72" y="310.4" font-size="37" font-weight="400" fill="#dcd0ff">Talk in <tspan fill="#c49bff" font-weight="600">Morse.</tspan></text>
+<g transform="translate(676 44)">
+<!-- the tape -->
+<rect x="0" y="0" width="548" height="122" rx="16" fill="#170e2b" fill-opacity=".93" stroke="#5a44a0" stroke-opacity=".7" stroke-width="1.5"/>
+<text class="m" x="18" y="46" font-size="11.5" font-weight="700" letter-spacing="1.6" fill="#a99cd0">YOU</text>
+<text class="m" x="18" y="90" font-size="11.5" font-weight="700" letter-spacing="1.6" fill="#a99cd0">DOTO</text>
+<path d="M72 42H530M72 86H530" stroke="#3a2a63" stroke-width="1.5"/>
+<g fill="#6bf0ff" filter="url(#mb-soft)"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;1;0;1;1" keyTimes="0;0.1;0.138;0.143;1"/><circle cx="92.5" cy="42" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.17" calcMode="discrete"/></circle><circle cx="112.5" cy="42" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.195" calcMode="discrete"/></circle><circle cx="132.5" cy="42" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.22" calcMode="discrete"/></circle><circle cx="152.5" cy="42" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.245" calcMode="discrete"/></circle><circle cx="187.5" cy="42" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.295" calcMode="discrete"/></circle><rect x="216" y="35.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.345" calcMode="discrete"/></rect><circle cx="254.5" cy="42" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.395" calcMode="discrete"/></circle><rect x="268" y="35.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.42" calcMode="discrete"/></rect><rect x="300" y="35.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.47" calcMode="discrete"/></rect></g>
+<g fill="#ff6bd6" filter="url(#mb-soft)"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;1;0;1;1" keyTimes="0;0.1;0.138;0.143;1"/><rect x="86" y="79.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.575" calcMode="discrete"/></rect><rect x="118" y="79.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.625" calcMode="discrete"/></rect><rect x="150" y="79.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.675" calcMode="discrete"/></rect><rect x="197" y="79.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.75" calcMode="discrete"/></rect><circle cx="235.5" cy="86" r="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.8" calcMode="discrete"/></circle><rect x="249" y="79.5" width="25" height="13" rx="6.5"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="1;0;1" keyTimes="0;0.14;0.825" calcMode="discrete"/></rect></g>
+<!-- the lamp -->
+<circle cx="274" cy="143" r="7.500" fill="#241640" stroke="#5a44a0" stroke-width="1.5"/>
+<circle cx="274" cy="143" r="7.500" fill="#6bf0ff" filter="url(#mb-glow)" opacity="0"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="0;1;0;1;0;1;0;1;0;1;0;1;0;1;0;1;0;1;0" keyTimes="0;0.17;0.1825;0.195;0.2075;0.22;0.2325;0.245;0.2575;0.295;0.3075;0.345;0.3825;0.395;0.4075;0.42;0.4575;0.47;0.5075" calcMode="discrete"/></circle>
+<circle cx="274" cy="143" r="7.500" fill="#ff6bd6" filter="url(#mb-glow)" opacity="0"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="0;1;0;1;0;1;0;1;0;1;0;1;0" keyTimes="0;0.575;0.6125;0.625;0.6625;0.675;0.7125;0.75;0.7875;0.8;0.8125;0.825;0.8625" calcMode="discrete"/></circle>
+<!-- the key -->
+<circle cx="274" cy="232" r="72" fill="none" stroke="#a66bff" stroke-opacity=".22" stroke-width="1.5"/>
+<circle cx="274" cy="232" r="64" fill="#120b1f" stroke="#6bf0ff" stroke-width="2.5"/>
+<g transform="translate(274 232)"><g><animateTransform attributeName="transform" type="scale" dur="10s" repeatCount="indefinite" values="1;0.93;1;0.93;1;0.93;1;0.93;1;0.93;1;0.93;1;0.93;1;0.93;1;0.93;1" keyTimes="0;0.17;0.1825;0.195;0.2075;0.22;0.2325;0.245;0.2575;0.295;0.3075;0.345;0.3825;0.395;0.4075;0.42;0.4575;0.47;0.5075" calcMode="discrete"/>
+<g filter="url(#mb-glow)"><circle r="57" fill="url(#mb-orb)"/></g>
+<circle r="35" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.5"/>
+<ellipse cx="-20" cy="-26" rx="17" ry="10" transform="rotate(-32 -20 -26)" fill="#fff" fill-opacity=".2"/>
+<circle r="57" fill="#6bf0ff" opacity="0"><animate attributeName="opacity" dur="10s" repeatCount="indefinite" values="0;0.22;0;0.22;0;0.22;0;0.22;0;0.22;0;0.22;0;0.22;0;0.22;0;0.22;0" keyTimes="0;0.17;0.1825;0.195;0.2075;0.22;0.2325;0.245;0.2575;0.295;0.3075;0.345;0.3825;0.395;0.4075;0.42;0.4575;0.47;0.5075" calcMode="discrete"/></circle>
+</g></g>
+<!-- the speed chip -->
+<rect x="34" y="216" width="128" height="32" rx="16" fill="#1d1238" stroke="#3a2a63" stroke-width="1.5"/>
+<text x="50" y="237.500" font-size="15" font-weight="700" fill="#ece6ff">12</text>
+<text x="72" y="237" font-size="13.5" fill="#a99cd0">wpm</text>
+<rect x="108" y="222" width="46" height="20" rx="10" fill="none" stroke="#6bf0ff" stroke-opacity=".8" stroke-width="1.4"/>
+<text x="131" y="236.500" font-size="12" font-weight="600" text-anchor="middle" fill="#6bf0ff">auto</text>
+<!-- Doto, who keys the reply -->
+<g transform="translate(404 206)"><g><animateTransform attributeName="transform" type="scale" dur="10s" repeatCount="indefinite" values="1;1.12;1;1.12;1;1.12;1;1.12;1;1.12;1;1.12;1" keyTimes="0;0.575;0.6125;0.625;0.6625;0.675;0.7125;0.75;0.7875;0.8;0.8125;0.825;0.8625" calcMode="discrete"/><g filter="url(#mb-glow)"><circle r="25" fill="url(#mb-orb)"/></g><circle cx="-7.69" cy="-8.65" r="6.25" fill="#fff" fill-opacity=".75"/><ellipse cx="-8.65" cy="2.4" rx="4.09" ry="4.09" fill="#120b1f"><animate attributeName="ry" dur="5s" begin="0s" repeatCount="indefinite" values="4.09;4.09;0.6;4.09;4.09" keyTimes="0;.56;.58;.6;1"/></ellipse><ellipse cx="8.65" cy="2.4" rx="4.09" ry="4.09" fill="#120b1f"><animate attributeName="ry" dur="5s" begin="0s" repeatCount="indefinite" values="4.09;4.09;0.6;4.09;4.09" keyTimes="0;.56;.58;.6;1"/></ellipse></g></g>
+<rect x="386" y="262" width="148" height="32" rx="10" fill="url(#mb-btn)"/>
+<path d="M402 278l14-6-5 13-2.500-5z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+<text x="474" y="283" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Send to Claude</text>
+</g>
+</svg>
